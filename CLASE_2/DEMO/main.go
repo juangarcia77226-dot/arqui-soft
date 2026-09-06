@@ -3,9 +3,13 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	// Importamos el router (usamos Gin como ejemplo)
 	"github.com/gin-gonic/gin"
+
+	// Cache local (in-memory) para el patrón Cache-Aside
+	"github.com/karlseguin/ccache/v2"
 
 	// Importamos nuestros paquetes internos
 	"main/controllers/items"
@@ -33,8 +37,20 @@ func main() {
 	// ---------------------------------------------------------
 
 	// // A. Repositorio: Le pasamos el cliente real de MongoDB
-	itemsRepo := repo.ItemsMongoDB{
+	mongoRepo := repo.ItemsMongoDB{
 		Client: client,
+	}
+
+	// A.1 Cache-Aside: envolvemos el repositorio real con una caché local
+	// (ccache). El Service sigue viendo un simple ItemsRepo, no sabe que
+	// hay una caché en el medio.
+	itemsCache := ccache.New(ccache.Configure())
+	defer itemsCache.Stop()
+
+	itemsRepo := repo.ItemsCachedRepo{
+		Repo:  mongoRepo,
+		Cache: itemsCache,
+		TTL:   60 * time.Second,
 	}
 
 	// B. Servicio: Le inyectamos el repositorio (cumple la interfaz ItemsRepo)

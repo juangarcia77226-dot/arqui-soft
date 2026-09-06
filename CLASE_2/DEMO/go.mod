@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/gin-gonic/gin v1.12.0
+	github.com/karlseguin/ccache/v2 v2.0.8
 	go.mongodb.org/mongo-driver v1.17.9
 )
 
