@@ -8,6 +8,13 @@ SOLR_URL="http://localhost:8983/solr/products/select"
 # exactamente el operador asignado dentro de q, buscá con eDisMax en title y
 # description y devolvé al menos id, title y score en JSON.
 
+curl -fsS -G "$SOLR_URL" \
+  --data-urlencode 'q=running AND Asics' \
+  --data-urlencode 'defType=edismax' \
+  --data-urlencode 'qf=title description' \
+  --data-urlencode 'fl=id,title,score' \
+  --data-urlencode 'wt=json'
+printf '\n'
 
 # CONSULTA 6 — TEXTO Y RANGO DE PRECIO
 #
@@ -16,3 +23,12 @@ SOLR_URL="http://localhost:8983/solr/products/select"
 # price:[MIN TO MAX]. Devolvé id, title, price y score en JSON.
 #
 # Ejecutá las dos consultas y entregá ambos comandos con sus salidas completas.
+
+curl -fsS -G "$SOLR_URL" \
+  --data-urlencode 'q=running' \
+  --data-urlencode 'defType=edismax' \
+  --data-urlencode 'qf=title description' \
+  --data-urlencode 'fq=price:[100000 TO 150000]' \
+  --data-urlencode 'fl=id,title,price,score' \
+  --data-urlencode 'wt=json'
+printf '\n'

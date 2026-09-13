@@ -10,3 +10,10 @@ SOLR_URL="http://localhost:8983/solr/products/select"
 # Antes de escribirla, decidí qué valores corresponden a q, defType, qf y wt.
 # Después ejecutá el archivo, revisá numFound, ids, títulos, orden y score, y
 # pegá el comando junto con la salida completa en el formulario.
+
+curl -fsS -G "$SOLR_URL" \
+  --data-urlencode 'q=Asics' \
+  --data-urlencode 'defType=edismax' \
+  --data-urlencode 'qf=title description' \
+  --data-urlencode 'wt=json'
+printf '\n'
