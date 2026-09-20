@@ -8,9 +8,9 @@ import (
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	initialStock = XXX
-	totalSales   = XXX
-	saleDelay    = XXX * time.Millisecond
+	initialStock = 184
+	totalSales   = 52
+	saleDelay    = 13 * time.Millisecond
 )
 
 // Simula totalSales compras concurrentes del mismo producto, decrementando un

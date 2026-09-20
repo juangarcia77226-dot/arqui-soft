@@ -2,27 +2,43 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	workerCount  = XXX
-	processDelay = XXX * time.Millisecond
+	workerCount  = 2
+	processDelay = 282 * time.Millisecond
 )
 
-var productIDs = []int{XXX}
+var productIDs = []int{220, 221, 222, 223, 224}
 
 func updateProduct(workerID int, productID int) {
 	fmt.Printf("Worker %d updated product %d\n", workerID, productID)
 	time.Sleep(processDelay)
 }
 
-// TODO: crear un channel de productos y workerCount workers fijos.
 func processWithWorkers() {
-	for _, productID := range productIDs {
-		updateProduct(1, productID)
+	jobs := make(chan int)
+
+	var wg sync.WaitGroup
+	wg.Add(workerCount)
+	for w := 1; w <= workerCount; w++ {
+		go func(workerID int) {
+			defer wg.Done()
+			for productID := range jobs {
+				updateProduct(workerID, productID)
+			}
+		}(w)
 	}
+
+	for _, productID := range productIDs {
+		jobs <- productID
+	}
+	close(jobs)
+
+	wg.Wait()
 }
 
 func main() {

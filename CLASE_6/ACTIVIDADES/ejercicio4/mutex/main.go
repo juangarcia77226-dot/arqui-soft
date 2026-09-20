@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	initialStock = XXX
-	totalSales   = XXX
-	saleDelay    = XXX * time.Millisecond
+	initialStock = 184
+	totalSales   = 52
+	saleDelay    = 13 * time.Millisecond
 )
 
 // TODO: Ejercicio 4 (a) — Contador seguro con sync.Mutex
@@ -24,14 +25,21 @@ const (
 //     que el resultado es initialStock menos totalSales.
 func main() {
 	stock := initialStock
+	var mu sync.Mutex
 
-	// Reemplazar este bloque secuencial por totalSales goroutines que decrementan
-	// stock protegidas con un sync.Mutex (usar sync.WaitGroup para esperar
-	// a que todas terminen antes del Println).
+	var wg sync.WaitGroup
+	wg.Add(totalSales)
 	for i := 0; i < totalSales; i++ {
-		time.Sleep(saleDelay)
-		stock--
+		go func() {
+			defer wg.Done()
+			time.Sleep(saleDelay)
+
+			mu.Lock()
+			stock--
+			mu.Unlock()
+		}()
 	}
+	wg.Wait()
 
 	fmt.Println("Stock final:", stock)
 }

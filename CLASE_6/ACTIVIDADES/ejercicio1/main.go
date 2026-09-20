@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	firstStoreName  = "XXX"
-	firstStorePrice = XXX
-	firstStoreDelay = XXX * time.Millisecond
+	firstStoreName  = "Tienda 12 A"
+	firstStorePrice = 1876
+	firstStoreDelay = 854 * time.Millisecond
 
-	secondStoreName  = "XXX"
-	secondStorePrice = XXX
-	secondStoreDelay = XXX * time.Millisecond
+	secondStoreName  = "Tienda 12 B"
+	secondStorePrice = 1632
+	secondStoreDelay = 406 * time.Millisecond
 )
 
 type Price struct {
@@ -31,9 +32,24 @@ func searchSecondStore() Price {
 	return Price{Store: secondStoreName, Value: secondStorePrice}
 }
 
-// TODO: iniciar las dos búsquedas en goroutines y reunir ambas respuestas.
 func comparePrices() []Price {
-	return []Price{searchFirstStore(), searchSecondStore()}
+	results := make([]Price, 2)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		results[0] = searchFirstStore()
+	}()
+
+	go func() {
+		defer wg.Done()
+		results[1] = searchSecondStore()
+	}()
+
+	wg.Wait()
+	return results
 }
 
 func main() {

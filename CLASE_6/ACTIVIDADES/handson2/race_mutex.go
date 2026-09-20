@@ -7,8 +7,8 @@ import (
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	initialStock = XXX
-	totalSales   = XXX
+	initialStock = 1000
+	totalSales   = 50
 )
 
 // Hands On 2: corregir la race condition del Hands On 1 con sync.Mutex.

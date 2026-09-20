@@ -1,17 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	productName    = "XXX"
-	reviewsScore   = XXX
-	reviewsDelay   = XXX * time.Millisecond
-	timeoutLimit   = XXX * time.Millisecond
-	defaultReviews = XXX
+	productName    = "Producto 12"
+	reviewsScore   = 42
+	reviewsDelay   = 1860 * time.Millisecond
+	timeoutLimit   = 370 * time.Millisecond
+	defaultReviews = 0
 )
 
 func getReviews() int {
@@ -19,9 +20,21 @@ func getReviews() int {
 	return reviewsScore
 }
 
-// TODO: esperar reviews o el timeout. Si gana el timeout, devolver defaultReviews.
 func getProductReviews() int {
-	return getReviews()
+	ctx, cancel := context.WithTimeout(context.Background(), timeoutLimit)
+	defer cancel()
+
+	resultCh := make(chan int, 1)
+	go func() {
+		resultCh <- getReviews()
+	}()
+
+	select {
+	case reviews := <-resultCh:
+		return reviews
+	case <-ctx.Done():
+		return defaultReviews
+	}
 }
 
 func main() {

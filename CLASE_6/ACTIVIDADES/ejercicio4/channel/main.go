@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 // VARIANTE: el formulario indicará qué bloque copiar y pegar aquí.
 const (
-	initialStock = XXX
-	totalSales   = XXX
-	saleDelay    = XXX * time.Millisecond
+	initialStock = 184
+	totalSales   = 52
+	saleDelay    = 13 * time.Millisecond
 )
 
 // TODO: Ejercicio 4 (b) — Contador seguro con una goroutine dueña del estado
@@ -31,12 +32,30 @@ const (
 func main() {
 	stock := initialStock
 
-	// Reemplazar por la versión basada en channels (una goroutine dueña del
-	// estado que recibe pedidos de decremento).
+	requests := make(chan struct{})
+	done := make(chan int)
+
+	// Goroutine dueña del estado: es la única que lee/escribe stock.
+	go func() {
+		for range requests {
+			stock--
+		}
+		done <- stock
+	}()
+
+	var wg sync.WaitGroup
+	wg.Add(totalSales)
 	for i := 0; i < totalSales; i++ {
-		time.Sleep(saleDelay)
-		stock--
+		go func() {
+			defer wg.Done()
+			time.Sleep(saleDelay)
+			requests <- struct{}{}
+		}()
 	}
+
+	wg.Wait()
+	close(requests)
+	stock = <-done
 
 	fmt.Println("Stock final:", stock)
 }
