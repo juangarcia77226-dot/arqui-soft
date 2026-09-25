@@ -8,8 +8,17 @@ services:
 
   api2:
     build: .
+    environment:
+      NOMBRE_SERVIDOR: "Clima B"
     ports:
       - "3002:3000"
+
+  api3:
+    build: .
+    environment:
+      NOMBRE_SERVIDOR: "Clima C"
+    ports:
+      - "3003:3000"
 
   balanceador:
     image: nginx:alpine
@@ -20,3 +29,4 @@ services:
     depends_on:
       - api1
       - api2
+      - api3

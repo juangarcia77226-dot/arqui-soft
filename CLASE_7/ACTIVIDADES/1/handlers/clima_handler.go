@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"os"
 
 	"actividad-balanceador-roto/config"
 	"actividad-balanceador-roto/dto"
@@ -22,7 +23,7 @@ func GetClima(c *gin.Context) {
 		return
 	}
 
-	nombreServidor := "Clima A"
+	nombreServidor := os.Getenv("NOMBRE_SERVIDOR")
 
 	c.IndentedJSON(http.StatusOK, dto.RespuestaClima{
 		Ciudad:       config.Ciudad,

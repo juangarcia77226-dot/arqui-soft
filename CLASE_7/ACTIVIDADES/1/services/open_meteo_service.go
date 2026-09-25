@@ -28,7 +28,7 @@ func (OpenMeteoService) ObtenerTemperatura() (*dto.TemperaturaActual, error) {
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusCreated {
+	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Open-Meteo respondió estado %d", response.StatusCode)
 	}
 
